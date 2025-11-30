@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "./supabase-admin";
+import { pool } from "./db";
 
 export type SellerLeadInput = {
   propertyAddress: string;
@@ -46,6 +46,40 @@ type InvestorLeadsRow = {
   buy_box: string;
 };
 
+let schemaInitPromise: Promise<void> | null = null;
+
+async function ensureSchemaInitialized(): Promise<void> {
+  if (!schemaInitPromise) {
+    schemaInitPromise = (async () => {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS seller_leads (
+          id SERIAL PRIMARY KEY,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          property_address TEXT NOT NULL,
+          timeline TEXT NOT NULL,
+          condition TEXT NOT NULL,
+          reason TEXT NOT NULL,
+          name TEXT NOT NULL,
+          contact TEXT NOT NULL
+        );
+      `);
+
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS investor_leads (
+          id SERIAL PRIMARY KEY,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          name TEXT NOT NULL,
+          email TEXT NOT NULL,
+          metros TEXT NOT NULL,
+          buy_box TEXT NOT NULL
+        );
+      `);
+    })();
+  }
+
+  return schemaInitPromise;
+}
+
 function mapSellerRow(row: SellerLeadsRow): SellerLead {
   return {
     id: String(row.id),
@@ -71,73 +105,72 @@ function mapInvestorRow(row: InvestorLeadsRow): InvestorLead {
 }
 
 export async function saveSellerLead(input: SellerLeadInput): Promise<SellerLead> {
-  const { data, error } = await supabaseAdmin
-    .from("seller_leads")
-    .insert({
-      property_address: input.propertyAddress,
-      timeline: input.timeline,
-      condition: input.condition,
-      reason: input.reason,
-      name: input.name,
-      contact: input.contact,
-    })
-    .select()
-    .single();
+  await ensureSchemaInitialized();
 
-  if (error || !data) {
-    throw new Error(`Failed to insert seller lead: ${error?.message ?? "Unknown error"}`);
+  const result = await pool.query<SellerLeadsRow>(
+    `
+      INSERT INTO seller_leads (property_address, timeline, condition, reason, name, contact)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *
+    `,
+    [
+      input.propertyAddress,
+      input.timeline,
+      input.condition,
+      input.reason,
+      input.name,
+      input.contact,
+    ],
+  );
+
+  const row = result.rows[0];
+
+  if (!row) {
+    throw new Error("Failed to insert seller lead");
   }
 
-  return mapSellerRow(data as SellerLeadsRow);
+  return mapSellerRow(row);
 }
 
 export async function saveInvestorLead(input: InvestorLeadInput): Promise<InvestorLead> {
-  const { data, error } = await supabaseAdmin
-    .from("investor_leads")
-    .insert({
-      name: input.name,
-      email: input.email,
-      metros: input.metros,
-      buy_box: input.buyBox,
-    })
-    .select()
-    .single();
+  await ensureSchemaInitialized();
 
-  if (error || !data) {
-    throw new Error(`Failed to insert investor lead: ${error?.message ?? "Unknown error"}`);
+  const result = await pool.query<InvestorLeadsRow>(
+    `
+      INSERT INTO investor_leads (name, email, metros, buy_box)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+    `,
+    [input.name, input.email, input.metros, input.buyBox],
+  );
+
+  const row = result.rows[0];
+
+  if (!row) {
+    throw new Error("Failed to insert investor lead");
   }
 
-  return mapInvestorRow(data as InvestorLeadsRow);
+  return mapInvestorRow(row);
 }
 
 export async function getSellerLeads(): Promise<SellerLead[]> {
-  const { data, error } = await supabaseAdmin
-    .from("seller_leads")
-    .select("*")
-    .order("created_at", { ascending: true });
+  await ensureSchemaInitialized();
 
-  if (error) {
-    throw new Error(`Failed to fetch seller leads: ${error.message}`);
-  }
+  const result = await pool.query<SellerLeadsRow>(
+    "SELECT * FROM seller_leads ORDER BY created_at ASC",
+  );
 
-  if (!data) return [];
-
-  return (data as SellerLeadsRow[]).map(mapSellerRow);
+  return result.rows.map(mapSellerRow);
 }
 
 export async function getInvestorLeads(): Promise<InvestorLead[]> {
-  const { data, error } = await supabaseAdmin
-    .from("investor_leads")
-    .select("*")
-    .order("created_at", { ascending: true });
+  await ensureSchemaInitialized();
 
-  if (error) {
-    throw new Error(`Failed to fetch investor leads: ${error.message}`);
-  }
+  const result = await pool.query<InvestorLeadsRow>(
+    "SELECT * FROM investor_leads ORDER BY created_at ASC",
+  );
 
-  if (!data) return [];
-
-  return (data as InvestorLeadsRow[]).map(mapInvestorRow);
+  return result.rows.map(mapInvestorRow);
 }
 
 

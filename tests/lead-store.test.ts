@@ -8,11 +8,11 @@ import {
   type InvestorLeadInput,
   type SellerLeadInput,
 } from "../lib/lead-store";
-import { supabaseAdmin } from "../lib/supabase-admin";
+import { pool } from "../lib/db";
 
 const TEST_PREFIX = `vitest-${Date.now()}`;
 
-describe("lead-store with Supabase", () => {
+describe("lead-store with Postgres", () => {
   it("saves and fetches a seller lead", async () => {
     const input: SellerLeadInput = {
       propertyAddress: `${TEST_PREFIX} 123 Test St`,
@@ -55,8 +55,7 @@ describe("lead-store with Supabase", () => {
 
   afterAll(async () => {
     // Clean up any test rows so the admin dashboard stays clean.
-    await supabaseAdmin.from("seller_leads").delete().like("reason", `${TEST_PREFIX}%`);
-    await supabaseAdmin.from("investor_leads").delete().like("email", `${TEST_PREFIX}%`);
+    await pool.query("DELETE FROM seller_leads WHERE reason LIKE $1", [`${TEST_PREFIX}%`]);
+    await pool.query("DELETE FROM investor_leads WHERE email LIKE $1", [`${TEST_PREFIX}%`]);
   });
 });
-
