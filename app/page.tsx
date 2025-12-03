@@ -13,6 +13,9 @@ export default function Home() {
 
   return (
     <div className="page-shell min-h-screen">
+      {/* Blueprint pattern overlay */}
+      <div className="blueprint-pattern" aria-hidden="true" />
+
       <header className="border-b border-slate-800/60 bg-slate-950/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
