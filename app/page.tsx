@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, type FormEvent } from "react";
 import { BrandGlyph } from "./components/brand-glyph";
@@ -63,13 +63,13 @@ export default function Home() {
         >
           <div className="fs-animate-hero">
             <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-amber-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-400">
-              New • U.S. motivated seller marketplace
+              Motivated Seller Marketplace
             </p>
             <h1 className="text-balance text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
               Sell your house fast to pre-vetted cash buyers.
             </h1>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-200 md:text-base">
-              FireSaleHomes connects highly motivated U.S. sellers with serious investors and cash buyers.
+              FireSaleHomes connects motivated sellers with serious investors and cash buyers.
               One simple form, multiple competing offers, no showings, no repairs, no pressure.
             </p>
             <div className="mt-6 flex flex-col gap-3 text-xs sm:flex-row sm:items-center">
@@ -80,21 +80,21 @@ export default function Home() {
                 Start my free property review
               </a>
               <span className="text-xs text-slate-300">
-                No agent obligation • No junk fees • We only work with serious buyers
+                No agent obligation � No junk fees � We only work with serious buyers
               </span>
             </div>
             <dl className="mt-8 grid max-w-xl grid-cols-2 gap-4 text-sm">
               <div>
                 <dt className="text-slate-400">Typical offer window</dt>
-                <dd className="font-semibold text-white">24–72 hours*</dd>
+                <dd className="font-semibold text-white">24�72 hours*</dd>
               </div>
               <div>
                 <dt className="text-slate-400">Condition</dt>
-                <dd className="font-semibold text-white">As‑is, no repairs required</dd>
+                <dd className="font-semibold text-white">As-is, no repairs required</dd>
               </div>
               <div>
                 <dt className="text-slate-400">Seller fee to FireSaleHomes</dt>
-                <dd className="font-semibold text-emerald-400">$0 – buyer pays our fee</dd>
+                <dd className="font-semibold text-emerald-400">$0 � buyer pays our fee</dd>
               </div>
               <div>
                 <dt className="text-slate-400">Coverage</dt>
@@ -196,8 +196,8 @@ export default function Home() {
                     name="timeline"
                     className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-950/40 px-3 py-2 text-xs text-slate-50 outline-none focus:border-amber-400/80 focus:ring-2 focus:ring-amber-400/40"
                   >
-                    <option>ASAP (2–3 weeks)</option>
-                    <option>30–45 days</option>
+                    <option>ASAP (2�3 weeks)</option>
+                    <option>30�45 days</option>
                     <option>60+ days</option>
                     <option>Just exploring options</option>
                   </select>
@@ -211,7 +211,7 @@ export default function Home() {
                     name="condition"
                     className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-950/40 px-3 py-2 text-xs text-slate-50 outline-none focus:border-amber-400/80 focus:ring-2 focus:ring-amber-400/40"
                   >
-                    <option>Move‑in ready</option>
+                    <option>Move-in ready</option>
                     <option>Needs light updates</option>
                     <option>Needs major repairs</option>
                     <option>Fire / flood / severe damage</option>
@@ -283,7 +283,7 @@ export default function Home() {
             How FireSaleHomes works for motivated sellers
           </h2>
           <p className="mt-3 max-w-2xl text-sm text-slate-300 md:text-base">
-            We’re not a public listing site. We quietly match your property with a curated pool of verified investors and
+            We�re not a public listing site. We quietly match your property with a curated pool of verified investors and
             cash buyers in your metro. You stay in control at every step.
           </p>
           <ol className="mt-8 grid gap-6 md:grid-cols-3">
@@ -291,21 +291,21 @@ export default function Home() {
               <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-400/20 text-sm font-bold text-amber-400">1</div>
               <h3 className="mt-3 text-base font-semibold text-white">Tell us about the property</h3>
               <p className="mt-2 text-sm text-slate-300">
-                Share the basics—address, condition, and timeline. We use this to decide which buyers are a fit.
+                Share the basics�address, condition, and timeline. We use this to decide which buyers are a fit.
               </p>
             </li>
             <li className="fs-animate-card-2 rounded-2xl border border-slate-700/60 bg-slate-900/80 p-5 shadow-lg">
               <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-400/20 text-sm font-bold text-amber-400">2</div>
-              <h3 className="mt-3 text-base font-semibold text-white">We invite pre‑vetted buyers</h3>
+              <h3 className="mt-3 text-base font-semibold text-white">We invite pre-vetted buyers</h3>
               <p className="mt-2 text-sm text-slate-300">
-                Verified investors review your property details and submit as‑is offers—often within 24–72 hours.*
+                Verified investors review your property details and submit as-is offers�often within 24�72 hours.*
               </p>
             </li>
             <li className="fs-animate-card-3 rounded-2xl border border-slate-700/60 bg-slate-900/80 p-5 shadow-lg">
               <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-400/20 text-sm font-bold text-amber-400">3</div>
               <h3 className="mt-3 text-base font-semibold text-white">You choose what happens next</h3>
               <p className="mt-2 text-xs text-slate-300">
-                Compare offers, ask questions, or walk away. There’s no obligation to accept any offer.
+                Compare offers, ask questions, or walk away. There�s no obligation to accept any offer.
               </p>
             </li>
           </ol>
@@ -323,34 +323,45 @@ export default function Home() {
                 For investors &amp; cash buyers
               </p>
               <h2 className="mt-3 text-balance text-xl font-bold text-white md:text-2xl">
-                Deal-ready motivated seller leads from select U.S. metros.
+                Browse motivated seller leads. Pay only when you connect.
               </h2>
               <p className="mt-4 max-w-xl text-sm text-slate-300 md:text-base">
-                FireSaleHomes curates high-intent, motivated sellers who want speed and certainty more than top-dollar
-                price. Join as a founding buyer in our launch markets and get early access to off-market opportunities.
+                Browse verified, motivated sellers for free. When you find a deal that fits your buy box,
+                pay $1,000 to unlock the seller&apos;s contact info with 48-hour exclusive access.
               </p>
               <ul className="mt-5 grid gap-3 text-sm text-slate-200">
                 <li className="flex items-start gap-3">
                   <span className="mt-1.5 h-2 w-2 rounded-full bg-emerald-400" />
-                  <span>Verified seller motivation and basic condition details on every lead.</span>
+                  <span>Browse free � see property details, motivation, condition, and price expectations.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="mt-1.5 h-2 w-2 rounded-full bg-emerald-400" />
-                  <span>No recycled wholesale lists—curated, direct-to-seller opportunities.</span>
+                  <span>$1,000 to unlock � get seller contact info with 48-hour exclusive access.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="mt-1.5 h-2 w-2 rounded-full bg-emerald-400" />
-                  <span>Buyer-pays success model; sellers never pay us, keeping conversations clean.</span>
+                  <span>Inbound leads only � these sellers came to us, not recycled lists.</span>
                 </li>
               </ul>
             </div>
             <div className="fs-animate-hero-secondary rounded-2xl border border-slate-700/60 bg-slate-900/90 p-6 shadow-xl">
-              <h3 className="text-base font-semibold text-white">Join the investor waitlist</h3>
+              <h3 className="text-base font-semibold text-white">Start browsing deals</h3>
               <p className="mt-2 text-sm text-slate-400">
-                Tell us where you buy and your criteria. We’ll reach out as we open each market.
+                Create your free investor account to browse motivated seller leads. Currently serving Texas.
               </p>
+              <a
+                href="/listings"
+                className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 transition hover:bg-emerald-400 hover:shadow-emerald-400/40"
+              >
+                Browse Listings Free
+              </a>
+              <div className="my-4 flex items-center gap-3">
+                <div className="h-px flex-1 bg-slate-700" />
+                <span className="text-xs text-slate-500">or join our waitlist</span>
+                <div className="h-px flex-1 bg-slate-700" />
+              </div>
               <form
-                className="mt-5 space-y-4 text-sm"
+                className="space-y-4 text-sm"
                 onSubmit={async (event: FormEvent<HTMLFormElement>) => {
                   event.preventDefault();
 
@@ -473,7 +484,7 @@ export default function Home() {
                   {investorStatus === "submitting" ? "Joining..." : "Join waitlist"}
                 </button>
                 <p className="text-xs leading-relaxed text-slate-400">
-                  We’ll keep you posted as we open each metro. No spam, no resale of your data.
+                  We�ll keep you posted as we open each metro. No spam, no resale of your data.
                 </p>
               </form>
             </div>
@@ -484,7 +495,7 @@ export default function Home() {
       <footer className="border-t border-slate-800/60 bg-slate-950 py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-6 text-xs text-slate-400 sm:flex-row sm:items-center">
           <p>
-            © {new Date().getFullYear()} FireSaleHomes. All rights reserved.
+            � {new Date().getFullYear()} FireSaleHomes. All rights reserved.
           </p>
           <p className="max-w-md text-slate-500">
             FireSaleHomes is a marketplace platform, not a real estate broker. We encourage all parties to consult
