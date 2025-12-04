@@ -107,6 +107,17 @@ async function ensureSchemaInitialized(): Promise<void> {
         CREATE INDEX IF NOT EXISTS idx_listing_unlocks_exclusive
         ON listing_unlocks(listing_id, exclusive_until DESC);
       `);
+
+      // Password reset tokens
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS password_reset_tokens (
+          id SERIAL PRIMARY KEY,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          email TEXT NOT NULL,
+          token TEXT UNIQUE NOT NULL,
+          expires_at TIMESTAMPTZ NOT NULL
+        );
+      `);
     })();
   }
 
@@ -434,4 +445,69 @@ export async function getFullListing(listingId: string): Promise<SellerLead | nu
   const row = result.rows[0];
   if (!row) return null;
   return mapSellerRow(row);
+}
+
+// ==========================================
+// PASSWORD RESET TOKENS
+// ==========================================
+
+export async function createPasswordResetToken(email: string): Promise<string | null> {
+  await ensureSchemaInitialized();
+
+  // Check if investor exists
+  const investor = await getInvestorByEmail(email);
+  if (!investor) return null;
+
+  // Generate secure token
+  const token = crypto.randomUUID() + crypto.randomUUID();
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
+
+  // Delete any existing tokens for this email
+  await pool.query("DELETE FROM password_reset_tokens WHERE email = $1", [email]);
+
+  // Insert new token
+  await pool.query(
+    `INSERT INTO password_reset_tokens (email, token, expires_at) VALUES ($1, $2, $3)`,
+    [email, token, expiresAt]
+  );
+
+  return token;
+}
+
+export async function verifyPasswordResetToken(token: string): Promise<string | null> {
+  await ensureSchemaInitialized();
+
+  const result = await pool.query<{ email: string; expires_at: string }>(
+    `SELECT email, expires_at FROM password_reset_tokens WHERE token = $1`,
+    [token]
+  );
+
+  const row = result.rows[0];
+  if (!row) return null;
+
+  // Check if expired
+  if (new Date(row.expires_at) < new Date()) {
+    await pool.query("DELETE FROM password_reset_tokens WHERE token = $1", [token]);
+    return null;
+  }
+
+  return row.email;
+}
+
+export async function resetPassword(token: string, newPasswordHash: string): Promise<boolean> {
+  await ensureSchemaInitialized();
+
+  const email = await verifyPasswordResetToken(token);
+  if (!email) return false;
+
+  // Update password
+  await pool.query(
+    "UPDATE investors SET password_hash = $1 WHERE email = $2",
+    [newPasswordHash, email]
+  );
+
+  // Delete the used token
+  await pool.query("DELETE FROM password_reset_tokens WHERE token = $1", [token]);
+
+  return true;
 }

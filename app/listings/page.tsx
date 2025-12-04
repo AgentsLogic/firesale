@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { BrandGlyph } from "../components/brand-glyph";
+import { ListingsGridSkeleton } from "../components/skeleton";
 
 type Listing = {
   id: string;
@@ -64,11 +66,26 @@ function getReasonLabel(reason: string): string {
 }
 
 export default function ListingsPage() {
+  const router = useRouter();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [investorName, setInvestorName] = useState<string | null>(null);
 
   useEffect(() => {
+    // Check auth status
+    fetch("/api/investor/me")
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (data?.investor) {
+          setIsLoggedIn(true);
+          setInvestorName(data.investor.name);
+        }
+      })
+      .catch(() => {});
+
+    // Load listings
     fetch("/api/listings")
       .then((res) => res.json())
       .then((data) => {
@@ -80,6 +97,13 @@ export default function ListingsPage() {
         setLoading(false);
       });
   }, []);
+
+  async function handleLogout() {
+    await fetch("/api/investor/logout", { method: "POST" });
+    setIsLoggedIn(false);
+    setInvestorName(null);
+    router.refresh();
+  }
 
   return (
     <div className="page-shell min-h-screen">
@@ -97,15 +121,32 @@ export default function ListingsPage() {
             </div>
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/investor/login" className="text-sm text-slate-300 hover:text-amber-400">
-              Sign In
-            </Link>
-            <Link
-              href="/investor/signup"
-              className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-400"
-            >
-              Create Account
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link href="/investor/dashboard" className="text-sm text-slate-300 hover:text-amber-400">
+                  {investorName ? `Hi, ${investorName.split(" ")[0]}` : "Dashboard"}
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="text-sm text-slate-400 hover:text-white"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/investor/login" className="text-sm text-slate-300 hover:text-amber-400">
+                  Sign In
+                </Link>
+                <Link
+                  href="/investor/signup"
+                  className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-400"
+                >
+                  Create Account
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -119,9 +160,7 @@ export default function ListingsPage() {
         </div>
 
         {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
-          </div>
+          <ListingsGridSkeleton count={6} />
         )}
 
         {error && (

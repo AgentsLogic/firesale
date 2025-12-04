@@ -73,8 +73,8 @@ export default function OpengraphImage() {
             Turn motivated sellers into clean, off-market deals.
           </div>
           <div style={{ fontSize: 20, color: "#e5e7eb", lineHeight: 1.4 }}>
-            A serious two-sided marketplace that quietly matches U.S. home sellers with pre-vetted investors
-            and cash buyers.
+            A serious two-sided marketplace that quietly matches motivated home sellers with pre-vetted
+            investors and cash buyers.
           </div>
         </div>
 

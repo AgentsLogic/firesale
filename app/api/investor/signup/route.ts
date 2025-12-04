@@ -1,25 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createInvestorAccount, getInvestorByEmail } from "@/lib/lead-store";
 import { hashPassword, setAuthCookie } from "@/lib/auth";
+import { checkRateLimit, getClientIp, RATE_LIMITS } from "@/lib/rate-limit";
+import { investorSignupSchema, formatZodError } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const ip = getClientIp(request);
+    const rateLimit = checkRateLimit(`signup:${ip}`, RATE_LIMITS.signup);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: `Too many signup attempts. Try again in ${rateLimit.retryAfterSeconds} seconds.` },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
-    const { email, password, name, company, phone } = body;
 
-    if (!email || !password || !name) {
+    // Validate input
+    const parsed = investorSignupSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Email, password, and name are required" },
+        { error: formatZodError(parsed.error) },
         { status: 400 }
       );
     }
 
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: "Password must be at least 8 characters" },
-        { status: 400 }
-      );
-    }
+    const { email, password, name, company, phone } = parsed.data;
 
     // Check if email already exists
     const existing = await getInvestorByEmail(email);
@@ -35,8 +43,8 @@ export async function POST(request: NextRequest) {
       email,
       passwordHash,
       name,
-      company,
-      phone,
+      company: company || undefined,
+      phone: phone || undefined,
     });
 
     await setAuthCookie(investor.id);

@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { saveSellerLead } from "@/lib/lead-store";
-
-export const sellerSchema = z.object({
-  propertyAddress: z.string().min(5),
-  timeline: z.string().min(1),
-  condition: z.string().min(1),
-  reason: z.string().min(1),
-  name: z.string().min(1),
-  contact: z.string().min(3),
-});
+import { sendNewSellerLeadNotification } from "@/lib/email";
+import { checkRateLimit, getClientIp, RATE_LIMITS } from "@/lib/rate-limit";
+import { sellerLeadSchema, formatZodError } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const ip = getClientIp(request);
+  const rateLimit = checkRateLimit(`seller:${ip}`, RATE_LIMITS.sellerForm);
+  if (!rateLimit.success) {
+    return NextResponse.json(
+      { error: `Too many submissions. Try again in ${Math.ceil((rateLimit.retryAfterSeconds || 0) / 60)} minutes.` },
+      { status: 429 }
+    );
+  }
+
   let json: unknown;
 
   try {
@@ -20,17 +23,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
   }
 
-  const parsed = sellerSchema.safeParse(json);
+  const parsed = sellerLeadSchema.safeParse(json);
 
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Invalid data", details: parsed.error.flatten() },
+      { error: formatZodError(parsed.error) },
       { status: 400 },
     );
   }
 
   try {
     const saved = await saveSellerLead(parsed.data);
+
+    // Send email notification (non-blocking)
+    sendNewSellerLeadNotification(parsed.data).catch((err) => {
+      console.error("Failed to send email notification:", err);
+    });
 
     return NextResponse.json(
       {

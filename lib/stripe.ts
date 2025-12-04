@@ -7,7 +7,7 @@ if (!stripeSecretKey && process.env.NODE_ENV === "production") {
 }
 
 export const stripe = stripeSecretKey
-  ? new Stripe(stripeSecretKey, { apiVersion: "2025-04-30.basil" })
+  ? new Stripe(stripeSecretKey, { apiVersion: "2025-11-17.clover" })
   : null;
 
 export const UNLOCK_PRICE_CENTS = 100000; // $1,000
